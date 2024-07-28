@@ -1,7 +1,7 @@
 - 👋 Hi, I’m Prasanna Kolli
 - 👀 I’m interested in Maths and logical Problems
-- 🌱 I’m currently learning different coding models
-- 💞️ I’m looking to collaborate on New codes
+- 🌱 I’m currently learning different coding Problems
+- 💞️ I’m looking to collaborate on New Things
 - 📫 How to reach me linkdin
 - https://www.linkedin.com/in/thirupathiprasanna-kolli
 - My github
