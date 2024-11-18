@@ -1,0 +1,32 @@
+import streamlit as st
+import google.generativeai as ai
+
+ai.configure(api_key="AIzaSyC_7k5JJl_Gmnkb7VRUCuLfS8yXH-_n1h0")
+
+sys_prompt = """You are a helpful AI code reviewer in Python,java,c,R,JavaScript,php,html Language.
+              Students will ask to check is their code wrong or right.
+              You are expected to replay the bug report how many mistakes and where is the wrong in code and
+              after this you will provide correct code.
+              In case if a student ask any question outside these language code,
+              politely decline and tell them to ask the question from these domain only."""
+
+model = ai.GenerativeModel(model_name="models/gemini-1.5-pro", 
+                          system_instruction=sys_prompt)
+
+
+
+st.markdown("<h1 style='text-align: center;'>🤖 AI Code Reviewer</h1>", unsafe_allow_html=True)
+
+# Display content when "About App" is clicked
+user_prompt = st.text_area("Enter your code:", placeholder="Type your query here...",height=250)
+
+btn_click = st.button("Generate Answer")
+
+
+
+if btn_click==True:
+    st.subheader("CODE REVIEW")
+    # do something
+    # generate respose: we need gemini or gpt model, configure (set the api key), call the model to generate the response
+    response = model.generate_content(user_prompt)
+    st.write(response.text)
