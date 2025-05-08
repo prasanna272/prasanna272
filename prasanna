@@ -1,0 +1,110 @@
+
+
+import json
+import requests
+import openai
+import sqlite3
+import numpy as np
+import time
+
+# API setup
+api_endpoint = "https://api.tavily.com/v1/scrape"  # Replace with actual API endpoint
+headers = {
+    'Authorization': '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'}
+# SQLite setup
+conn = sqlite3.connect('itc_data.db')
+cursor = conn.cursor()
+cursor.execute( {"year": "2023", "text": "Annual Report 2023: Revenue = 500 million"},
+    {"year": "2024", "text": "Annual Report 2024: Revenue = 600 million"})
+
+def scrape_data(url):
+    payload = {
+        'url': url,
+        'selectors': {
+            'annual_reports': 'div#annual-reports a',
+            'investor_presentations': 'div#investor-presentations a',
+            'stock_price_history': 'table#stock-price-history tr'
+        }
+    }
+
+    
+    response = requests.post(api_endpoint, json= payload, headers=headers)
+    if response.status_code == 200:
+        return response.json()  # Return JSON response
+    else:
+        print(f"Error: {response.status_code} - {response.text}")
+        return None
+# ITC's financial page URL
+url = "https://www.itcportal.com/investor/index.aspx"
+scraped_data = scrape_data(url)
+if scraped_data:
+    print(json.dumps(scraped_data, indent=4))
+# Example for storing stock prices
+def store_stock_prices(stock_prices):
+    for price in stock_prices:
+        cursor.execute(reports = [
+    {"year": "2022", "text": "Revenue: ₹450 crores, Profit: ₹80 crores"},
+    {"year": "2023", "text": "Revenue: ₹500 crores, Profit: ₹100 crores"},
+    {"year": "2024", "text": "Revenue: ₹600 crores, Profit: ₹120 crores"}
+    ]
+
+        )
+    conn.commit()
+# Example usage
+stock_prices_data = [{'date': '2023-01-01', 'closing_price': 280.5}, {'date': '2023-01-02', 'closing_price': 282.1}]
+store_stock_prices(stock_prices_data)
+import openai
+import numpy as np
+
+# Set OpenAI API key
+openai.api_key = "Take OPEN_API_KEY"
+def get_embeddings(texts):
+    response = openai.Embedding.create(input=texts, model="text-embedding-ada-002")
+    embeddings = [embedding['embedding'] for embedding in response['data']]
+    return embeddings
+
+# Example usage: Convert annual report text into embeddings
+annual_report_texts = ["Annual report 2023: Revenue = 500 million", "Annual report 2024: Revenue = 600 million"]
+annual_report_embeddings = get_embeddings(annual_report_texts)
+print(np.array(annual_report_embeddings))
+def query_llm(question, context):
+    prompt = f"Context: {context}\nQuestion: {question}\nAnswer:"
+    
+    response = openai.Completion.create(
+        model="gpt-4", 
+        prompt=prompt,
+        max_tokens=200
+    )
+    return response.choices[0].text.strip()
+# Example usage: Querying about revenue in 2024
+context = "Annual report 2023: Revenue = 500 million. Annual report 2024: Revenue = 600 million."
+question = "What was ITC’s revenue in 2024?"
+answer = query_llm(question, context)
+print(answer)  # It should answer based on the context provided.
+def main():
+    # Scrape data
+    url = "https://www.itcportal.com/about-itc/shareholder-value/report-and-accounts.aspx"
+    scraped_data = scrape_data(url)
+    
+    if scraped_data:
+        # Store the data in SQLite
+        store_annual_reports(scraped_data['annual_reports'])
+        store_stock_prices(scraped_data['stock_price_history'])
+        
+        # Generate embeddings for annual reports
+        annual_report_texts = [report['text'] for report in scraped_data['annual_reports']]
+        annual_report_embeddings = get_embeddings(annual_report_texts)
+        
+        # Query LLM for insights
+        context =  context = """
+Annual report 2022: Revenue = ₹450 crores, Profit = ₹80 crores.
+Annual report 2023: Revenue = ₹500 crores, Profit = ₹100 crores.
+Annual report 2024: Revenue = ₹600 crores, Profit = ₹120 crores.
+""" # Combine all texts as context
+        question = "What was ITC’s revenue in 2024?"
+        answer = query_llm(question, context)
+        
+        print(answer)
+    if __name__ == "__main__":
+     main()
+
